@@ -7,6 +7,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
 
 public class RouterHandler implements Runnable {
@@ -16,6 +18,7 @@ public class RouterHandler implements Runnable {
 	private RouterHandler client;
 
 	private ByteBuffer buffer = ByteBuffer.allocate(1024);
+	private HashMap<String, SocketChannel> clients = new HashMap<String, SocketChannel>();
 
 	public RouterHandler(String _name, int _port) {
 		this.port = _port;
@@ -31,11 +34,23 @@ public class RouterHandler implements Runnable {
 			ssc.configureBlocking(false);
 			ssc.register(selector, SelectionKey.OP_ACCEPT);
 
-			while (true) {
+			while (ssc.isOpen()) {
 				selector.select();
-				Set<SelectionKey> selectionKeys = selector.selectedKeys();
+				Set<SelectionKey> selectedKeys = selector.selectedKeys();
 
-				System.out.println(selectionKeys.toString());
+				Iterator<SelectionKey> iter = selectedKeys.iterator();
+				while (iter.hasNext()) {
+
+					SelectionKey key = iter.next();
+
+					if (key.isAcceptable()) {
+						this.handleAccept(selector, ssc);
+					} else if (key.isReadable()) {
+						System.out.println("yep!!!");
+
+					}
+					iter.remove();
+				}
 			}
 
 		} catch (IOException e) {
@@ -43,6 +58,16 @@ public class RouterHandler implements Runnable {
 			e.printStackTrace();
 		}
 
+	}
+
+	private void handleAccept(Selector selector, ServerSocketChannel ssc) throws IOException {
+		SocketChannel client = ssc.accept();
+		client.configureBlocking(false);
+		client.register(selector, SelectionKey.OP_READ);
+
+		String ID = String.format("%06d", client.socket().getPort());
+
+		this.clients.put(ID, client);
 	}
 
 	public void setHandler(RouterHandler _handler) {
