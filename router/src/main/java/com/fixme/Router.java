@@ -4,8 +4,8 @@ import com.fixme.RouterHandler;
 
 public class Router {
 	public static void main(String[] args) {
-		RouterHandler rh1 = new RouterHandler("broker", 5000);
-		RouterHandler rh2 = new RouterHandler("market", 5001);
+		RouterHandler rh1 = new RouterHandler("Broker", 5000);
+		RouterHandler rh2 = new RouterHandler("Market", 5001);
 
 		rh1.setHandler(rh2);
 		rh2.setHandler(rh1);

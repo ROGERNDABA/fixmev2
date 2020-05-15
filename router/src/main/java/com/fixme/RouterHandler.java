@@ -1,6 +1,7 @@
 package com.fixme;
 
 import com.fixme.Colour;
+import com.fixme.TimePrint;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -70,7 +71,7 @@ public class RouterHandler implements Runnable {
 		String ID = String.format("%06d", client.socket().getPort());
 		ByteBuffer IDresp = ByteBuffer.wrap(ID.getBytes());
 
-		System.out.println("Accepted: " + ID);
+		TimePrint.print(this.name + " " + ID + " connected.");
 
 		client.write(IDresp);
 		IDresp.rewind();
@@ -105,7 +106,8 @@ public class RouterHandler implements Runnable {
 
 		} catch (IOException ioe) {
 			if (ioe.getMessage().contains("An existing connection was forcibly closed by the remote host")) {
-				Colour.out.red("Ended : " + String.format("%06d", client.socket().getPort()));
+				String ID = String.format("%06d", client.socket().getPort());
+				TimePrint.print(this.name + " " + ID + " disconnected.");
 				client.close();
 			}
 		}

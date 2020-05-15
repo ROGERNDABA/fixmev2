@@ -17,4 +17,18 @@ public class Colour {
 			System.out.println("\u001B[1;37m" + s + "\u001B[0m");
 		}
 	}
+
+	static public class line {
+		static public String red(String s) {
+			return ("\u001B[1;31m" + s + "\u001B[0m");
+		}
+
+		static public String green(String s) {
+			return ("\u001B[1;32m" + s + "\u001B[0m");
+		}
+
+		static public String white(String s) {
+			return ("\u001B[1;37m" + s + "\u001B[0m");
+		}
+	}
 }
