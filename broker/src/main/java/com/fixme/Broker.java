@@ -7,6 +7,7 @@ import java.nio.channels.SocketChannel;
 
 public class Broker {
 	private static SocketChannel client;
+	private String ConnID;
 	private static ByteBuffer buffer;
 	private static Broker instance;
 
@@ -26,6 +27,11 @@ public class Broker {
 		try {
 			client = SocketChannel.open(new InetSocketAddress("localhost", 5000));
 			buffer = ByteBuffer.allocate(256);
+
+			buffer.clear();
+			client.read(buffer);
+			String response = new String(buffer.array()).trim();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -50,7 +56,15 @@ public class Broker {
 
 	public static void main(String[] args) {
 		Broker br = Broker.start();
+		while (true) {
 
-		br.sendMessage("Hey!");
+		}
+		// try {
+
+		// // br.sendMessage("new");
+		// Broker.stop();
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
 	}
 }

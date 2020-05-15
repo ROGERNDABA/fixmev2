@@ -1,5 +1,6 @@
 package com.fixme;
 
+import com.fixme.Colour;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -17,8 +18,8 @@ public class RouterHandler implements Runnable {
 	private String name;
 	private RouterHandler client;
 
-	private ByteBuffer buffer = ByteBuffer.allocate(1024);
 	private HashMap<String, SocketChannel> clients = new HashMap<String, SocketChannel>();
+	private ByteBuffer buff = ByteBuffer.allocate(1024);
 
 	public RouterHandler(String _name, int _port) {
 		this.port = _port;
@@ -43,12 +44,12 @@ public class RouterHandler implements Runnable {
 
 					SelectionKey key = iter.next();
 
-					if (key.isAcceptable()) {
+					if (!key.isValid())
+						continue;
+					if (key.isAcceptable())
 						this.handleAccept(selector, ssc);
-					} else if (key.isReadable()) {
-						System.out.println("yep!!!");
-
-					}
+					if (key.isReadable())
+						this.handleReadWrite(selector, key);
 					iter.remove();
 				}
 			}
@@ -62,12 +63,59 @@ public class RouterHandler implements Runnable {
 
 	private void handleAccept(Selector selector, ServerSocketChannel ssc) throws IOException {
 		SocketChannel client = ssc.accept();
+
 		client.configureBlocking(false);
 		client.register(selector, SelectionKey.OP_READ);
 
 		String ID = String.format("%06d", client.socket().getPort());
+		ByteBuffer IDresp = ByteBuffer.wrap(ID.getBytes());
+
+		System.out.println("Accepted: " + ID);
+
+		client.write(IDresp);
+		IDresp.rewind();
 
 		this.clients.put(ID, client);
+	}
+
+	private void handleReadWrite(Selector selector, SelectionKey sKey) throws IOException {
+		SocketChannel client = (SocketChannel) sKey.channel();
+
+		try {
+			StringBuilder sb = new StringBuilder();
+
+			buff.clear();
+			int read = 0;
+			while ((read = client.read(buff)) > 0) {
+				buff.flip();
+				byte[] bytes = new byte[buff.limit()];
+				buff.get(bytes);
+				sb.append(new String(bytes));
+				buff.clear();
+			}
+			String msg;
+			if (read < 0) {
+				msg = sKey.attachment() + " left the chat.\n";
+				client.close();
+			} else {
+				msg = sKey.attachment() + ": " + sb.toString();
+			}
+
+			System.out.println(msg);
+
+		} catch (IOException ioe) {
+			if (ioe.getMessage().contains("An existing connection was forcibly closed by the remote host")) {
+				Colour.out.red("Ended : " + String.format("%06d", client.socket().getPort()));
+				client.close();
+			}
+		}
+
+		// System.out.println("Yep: |" + clients.toString() + "| " +
+		// client.socket().getPort());
+	}
+
+	private void respondToClient(ByteBuffer buff, SelectionKey skey) throws IOException {
+		// SocketChannel
 	}
 
 	public void setHandler(RouterHandler _handler) {
