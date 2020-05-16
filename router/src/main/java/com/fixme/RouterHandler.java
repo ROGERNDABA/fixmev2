@@ -81,6 +81,7 @@ public class RouterHandler implements Runnable {
 
 	private void handleReadWrite(Selector selector, SelectionKey sKey) throws IOException {
 		SocketChannel client = (SocketChannel) sKey.channel();
+		String ID = String.format("%06d", client.socket().getPort());
 
 		try {
 			StringBuilder sb = new StringBuilder();
@@ -94,9 +95,9 @@ public class RouterHandler implements Runnable {
 				sb.append(new String(bytes));
 				buff.clear();
 			}
-			String msg;
+			String msg = "";
 			if (read < 0) {
-				msg = sKey.attachment() + " left the chat.\n";
+				TimePrint.print(this.name + " " + ID + " disconnected.");
 				client.close();
 			} else {
 				msg = sKey.attachment() + ": " + sb.toString();
@@ -106,14 +107,14 @@ public class RouterHandler implements Runnable {
 
 		} catch (IOException ioe) {
 			if (ioe.getMessage().contains("An existing connection was forcibly closed by the remote host")) {
-				String ID = String.format("%06d", client.socket().getPort());
 				TimePrint.print(this.name + " " + ID + " disconnected.");
-				client.close();
 			}
+		} finally {
+			client.close();
 		}
+	}
 
-		// System.out.println("Yep: |" + clients.toString() + "| " +
-		// client.socket().getPort());
+	private void proccessMessage() {
 	}
 
 	private void respondToClient(ByteBuffer buff, SelectionKey skey) throws IOException {
@@ -127,6 +128,10 @@ public class RouterHandler implements Runnable {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public HashMap<String, SocketChannel> getClients() {
+		return this.clients;
 	}
 
 }

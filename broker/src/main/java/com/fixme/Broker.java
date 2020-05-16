@@ -56,12 +56,10 @@ public class Broker {
 
 	public static void main(String[] args) {
 		Broker br = Broker.start();
-		while (true) {
+		br.sendMessage("new");
 
-		}
 		// try {
 
-		// // br.sendMessage("new");
 		// Broker.stop();
 		// } catch (IOException e) {
 		// e.printStackTrace();

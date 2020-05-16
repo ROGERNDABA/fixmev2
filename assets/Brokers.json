@@ -1,0 +1,50 @@
+[{
+		"_id": "5ebfb00301b8ba9119b27488",
+		"index": 0,
+		"broker": "LEXICONDO",
+		"password": "$2a$10$NlHHWpt1yEBd.qmqeHADVeMTw73SfsvwW8z7sxyd0cwVEc1vcAqCC",
+		"instruments": [0, 1, 2]
+	},
+	{
+		"_id": "5ebfb00301fbe5da9b42fc26",
+		"index": 1,
+		"broker": "KEENGEN",
+		"password": "",
+		"instruments": [0, 1, 2]
+	},
+	{
+		"_id": "5ebfb0032871f319f3ea049e",
+		"index": 2,
+		"broker": "EXOSTREAM",
+		"password": "",
+		"instruments": [0, 1, 2]
+	},
+	{
+		"_id": "5ebfb003921f7af80bd05d41",
+		"index": 3,
+		"broker": "ZENTURY",
+		"password": "",
+		"instruments": [0, 1, 2]
+	},
+	{
+		"_id": "5ebfb0032a26b66b9b2605ac",
+		"index": 4,
+		"broker": "BEDLAM",
+		"password": "",
+		"instruments": [0, 1, 2]
+	},
+	{
+		"_id": "5ebfb00310ce187d705ac5bb",
+		"index": 5,
+		"broker": "ZILCH",
+		"password": "",
+		"instruments": [0, 1, 2]
+	},
+	{
+		"_id": "5ebfb003143cec1d8d98424e",
+		"index": 6,
+		"broker": "LINGOAGE",
+		"password": "",
+		"instruments": [0, 1, 2]
+	}
+]
