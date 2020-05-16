@@ -2,14 +2,14 @@
 		"_id": "5ebfb00301b8ba9119b27488",
 		"index": 0,
 		"broker": "LEXICONDO",
-		"password": "$2a$10$NlHHWpt1yEBd.qmqeHADVeMTw73SfsvwW8z7sxyd0cwVEc1vcAqCC",
+		"password": "$2a$10$JsVxvdFvFgGzSPk9CvuYDeMVkJrUxXmfPMG4gg94E2uKu/cRJyzDK",
 		"instruments": [0, 1, 2]
 	},
 	{
 		"_id": "5ebfb00301fbe5da9b42fc26",
 		"index": 1,
 		"broker": "KEENGEN",
-		"password": "",
+		"password": "rer",
 		"instruments": [0, 1, 2]
 	},
 	{
@@ -29,8 +29,8 @@
 	{
 		"_id": "5ebfb0032a26b66b9b2605ac",
 		"index": 4,
-		"broker": "BEDLAM",
-		"password": "",
+		"broker": "hhh",
+		"password": "$2a$10$YSJQygPygbcFxkapBLXdZ.duNJTzKZxpbCpDWvjDyuapq7P4Ipvyi",
 		"instruments": [0, 1, 2]
 	},
 	{
