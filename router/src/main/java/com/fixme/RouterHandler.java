@@ -2,6 +2,8 @@ package com.fixme;
 
 import com.fixme.Colour;
 import com.fixme.TimePrint;
+import com.fixme.Fix;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -110,7 +112,15 @@ public class RouterHandler implements Runnable {
 					buff.flip();
 					client.write(buff);
 				} else {
-					System.out.println("==================");
+
+					if (!Fix.validFixChecksum(msg)) {
+						this.broadcast(
+								"Router rejected message because it's either invalid FIX message or the checksum is invalid",
+								ID);
+					} else {
+						String dest = Fix.getFixPart(msg, 49);
+						this.oclient.broadcast(msg, dest);
+					}
 				}
 
 			}
@@ -122,9 +132,6 @@ public class RouterHandler implements Runnable {
 			this.clients.remove(ID);
 			client.close();
 		}
-	}
-
-	private void proccessMessage() {
 	}
 
 	private String getMarkets() {
@@ -143,6 +150,20 @@ public class RouterHandler implements Runnable {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public void broadcast(String msg, String ConnID) throws IOException {
+		SocketChannel socket = this.clients.get(ConnID);
+
+		System.out.println("1 :" + msg + "  2: " + ConnID);
+
+		ByteBuffer buff = ByteBuffer.allocate(1024);
+		buff.flip();
+		buff.clear();
+		buff.put(msg.getBytes());
+		buff.flip();
+		socket.write(buff);
+
 	}
 
 	public HashMap<String, SocketChannel> getClients() {

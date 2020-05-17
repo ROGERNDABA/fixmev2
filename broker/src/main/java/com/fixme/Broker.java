@@ -114,14 +114,15 @@ public class Broker {
 		}
 
 		Colour.white("Enter Instrument quantity: ");
-		instName = this.scn.nextLine().trim().toUpperCase();
-		while (!Helpers.isNumeric(instName)) {
+		instQuantity = this.scn.nextLine().trim().toUpperCase();
+		while (!Helpers.isNumeric(instQuantity)) {
 			Colour.out.red("Invalid input");
 			Colour.white("Enter Instrument quantity: ");
-			instName = this.scn.nextLine().trim().toUpperCase();
+			instQuantity = this.scn.nextLine().trim().toUpperCase();
 		}
 
-		String markets = ch.sendMessage("markets");
+		ch.sendMessage("markets");
+		String markets = ch.getServerResponse();
 		if (markets.isEmpty()) {
 			Colour.out.red("\nNo markets to trade in.\n");
 			this.processBuySell();
@@ -136,9 +137,16 @@ public class Broker {
 			while (!Helpers.inArray(marketStrings, marketID)) {
 				Colour.out.red("Invalid input");
 				Colour.white("Enter market ID: ");
-				instName = this.scn.nextLine().trim().toUpperCase();
+				marketID = this.scn.nextLine().trim().toUpperCase();
 			}
-			ch.sendMessage(marketID);
+			String fixString = Fix.encode(this.ConnID, instName, instQuantity, marketID, 1);
+			ch.sendMessage(fixString);
+			String marketResp = ch.getServerResponse();
+			// System.out.println(fixString);
+			// System.out.println("---> " + Fix.validFixChecksum(fixString));
+			// Fix.getFixPart(fixString, 56);
+			// public String name(String clientID, String instname, int quantity, String
+			// destClientID, int messageType)
 		}
 
 	}

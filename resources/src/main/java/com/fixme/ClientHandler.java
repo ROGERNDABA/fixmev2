@@ -51,7 +51,7 @@ public class ClientHandler {
 		}
 	}
 
-	private String getServerResponse() throws IOException {
+	public String getServerResponse() throws IOException {
 		Selector selector = Selector.open();
 		client.register(selector, SelectionKey.OP_READ);
 		while (true) {
@@ -84,13 +84,12 @@ public class ClientHandler {
 		}
 	}
 
-	public String sendMessage(String msg) throws IOException {
+	public void sendMessage(String msg) throws IOException {
 		buffer.flip();
 		buffer.clear();
 		buffer.put(msg.getBytes());
 		buffer.flip();
 		client.write(buffer);
-		return this.getServerResponse();
 	}
 
 	/**
