@@ -1,6 +1,7 @@
 package com.fixme;
 
 import com.fixme.Colour;
+import com.fixme.Fix;
 import com.fixme.Helpers;
 import com.fixme.BrokerHandler;
 
@@ -11,6 +12,7 @@ import org.json.simple.parser.ParseException;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -32,7 +34,9 @@ public class Broker {
 
 		JSONParser jp = new JSONParser();
 
-		try (FileReader reader = new FileReader("../assets/Brokers.json")) {
+		try {
+			File file = new File("").getCanonicalFile();
+			FileReader reader = new FileReader(file.getParent() + "/fixme/assets/Brokers.json");
 			Object obj = jp.parse(reader);
 
 			JSONArray brokerList = (JSONArray) obj;
@@ -53,6 +57,7 @@ public class Broker {
 						if (res.verified) {
 							valid = true;
 							this.details = Helpers.jsonToMap(broker);
+							Colour.out.green("\n\tLogged in successfuly.");
 							break;
 						}
 					}
@@ -87,6 +92,32 @@ public class Broker {
 	}
 
 	public void processBuy() {
+		System.out.println("\nHere's a list of instruments that can be bought\n");
+		String[] insts = { "GOLD", "DIAMOND", "PLATINUM", "OIL", "SUGAR", "SUGAR" };
+		String[] units = { "oz", "ct", "ct", "l", "kg", "kg" };
+
+		for (int i = 0; i < insts.length; i++) {
+			System.out.println((i + 1) + ". " + insts[i] + " (" + units[i] + ")");
+		}
+
+		String instName;
+		String instQuantity;
+
+		Colour.white("\nEnter Instrument name: ");
+		instName = this.scn.nextLine().trim().toUpperCase();
+		while (!Helpers.inArray(insts, instName)) {
+			Colour.out.red("Invalid input");
+			Colour.white("Enter Instrument name: ");
+			instName = this.scn.nextLine().trim().toUpperCase();
+		}
+
+		Colour.white("Enter Instrument quantity: ");
+		instName = this.scn.nextLine().trim().toUpperCase();
+		while (!Helpers.isNumeric(instName)) {
+			Colour.out.red("Invalid input");
+			Colour.white("Enter Instrument quantity: ");
+			instName = this.scn.nextLine().trim().toUpperCase();
+		}
 
 	}
 
@@ -110,9 +141,16 @@ public class Broker {
 
 		Broker br = new Broker();
 		if (br.login()) {
-			BrokerHandler bh = BrokerHandler.start();
-			br.setConnID(bh.getConnID());
-			br.processBuySell();
+			try {
+				BrokerHandler bh = BrokerHandler.start();
+				if (bh.getConnID() != null && !bh.getConnID().isEmpty()) {
+					br.setConnID(bh.getConnID());
+					// br.processBuySell();
+					bh.sendMessage("markets");
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

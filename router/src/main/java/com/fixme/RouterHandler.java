@@ -9,6 +9,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -17,10 +18,9 @@ public class RouterHandler implements Runnable {
 
 	private int port;
 	private String name;
-	private RouterHandler client;
+	private RouterHandler oclient;
 
 	private HashMap<String, SocketChannel> clients = new HashMap<String, SocketChannel>();
-	private ByteBuffer buff = ByteBuffer.allocate(1024);
 
 	public RouterHandler(String _name, int _port) {
 		this.port = _port;
@@ -82,34 +82,55 @@ public class RouterHandler implements Runnable {
 	private void handleReadWrite(Selector selector, SelectionKey sKey) throws IOException {
 		SocketChannel client = (SocketChannel) sKey.channel();
 		String ID = String.format("%06d", client.socket().getPort());
+		ByteBuffer buff = ByteBuffer.allocate(1024);
 
 		try {
 			StringBuilder sb = new StringBuilder();
 
-			buff.clear();
-			int read = 0;
-			while ((read = client.read(buff)) > 0) {
-				buff.flip();
-				byte[] bytes = new byte[buff.limit()];
-				buff.get(bytes);
-				sb.append(new String(bytes));
-				buff.clear();
-			}
 			String msg = "";
-			if (read < 0) {
-				TimePrint.print(this.name + " " + ID + " disconnected.");
-				client.close();
-			} else {
-				msg = sKey.attachment() + ": " + sb.toString();
+			int read;
+
+			buff.flip();
+			buff.clear();
+			read = client.read(buff);
+			if (read > 0) {
+				buff.flip();
+				msg = Charset.forName("UTF-8").decode(buff).toString().trim();
 			}
 
-			System.out.println(msg);
+			// while ((read = client.read(buff)) > 0) {
+			// System.out.println(client.toString());
+			// buff.flip();
+			// byte[] bytes = new byte[buff.limit()];
+			// buff.get(bytes);
+			// sb.append(new String(bytes));
+			// buff.clear();
+			// }
+			System.out.println("=====> " + msg);
+			if (read < 0) {
+				TimePrint.print(this.name + " " + ID + " disconnected.");
+				this.clients.remove(ID);
+				client.close();
+			} else {
+
+				// client.register(selector, SelectionKey.OP_WRITE);
+				// System.out.println(this.getMarkets());
+				// if (msg.trim().equals("markets")) {
+				// buff.flip();
+				// buff.clear();
+				// buff.put(this.getMarkets().getBytes());
+				// buff.flip();
+				// // buff.rewind();
+				// client.write(buff);
+				// }
+			}
 
 		} catch (IOException ioe) {
 			if (ioe.getMessage().contains("An existing connection was forcibly closed by the remote host")) {
 				TimePrint.print(this.name + " " + ID + " disconnected.");
 			}
 		} finally {
+			this.clients.remove(ID);
 			client.close();
 		}
 	}
@@ -117,13 +138,17 @@ public class RouterHandler implements Runnable {
 	private void proccessMessage() {
 	}
 
+	private String getMarkets() {
+		HashMap<String, SocketChannel> markets = this.oclient.getClients();
+		return markets.keySet().toString() + "rrrr";
+	}
+
 	private void respondToClient(ByteBuffer buff, SelectionKey skey) throws IOException {
 		// SocketChannel
 	}
 
 	public void setHandler(RouterHandler _handler) {
-		this.client = _handler;
-		System.out.println("This is : " + _handler.getName());
+		this.oclient = _handler;
 	}
 
 	public String getName() {

@@ -55,4 +55,26 @@ public class Helpers {
 		}
 		return list;
 	}
+
+	public static boolean inArray(String[] arr, String toCheckValue) {
+		for (String element : arr) {
+			if (toCheckValue.equals(element)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isNumeric(String strNum) {
+		if (strNum == null) {
+			return false;
+		}
+		try {
+			double d = Double.parseDouble(strNum);
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
+	}
+
 }
