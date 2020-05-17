@@ -3,7 +3,7 @@ package com.fixme;
 import com.fixme.Colour;
 import com.fixme.Fix;
 import com.fixme.Helpers;
-import com.fixme.BrokerHandler;
+import com.fixme.ClientHandler;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -22,7 +22,7 @@ import java.util.Scanner;
 public class Broker {
 	private Scanner scn;
 	private Map<String, Object> details;
-	private BrokerHandler bh;
+	private ClientHandler ch;
 
 	private String ConnID;
 
@@ -121,10 +121,11 @@ public class Broker {
 			instName = this.scn.nextLine().trim().toUpperCase();
 		}
 
-		String markets = bh.sendMessage("markets");
-		if (markets.isEmpty())
-			Colour.out.red("\nNo markets to trade in.\nDisconnectiing...");
-		else {
+		String markets = ch.sendMessage("markets");
+		if (markets.isEmpty()) {
+			Colour.out.red("\nNo markets to trade in.\n");
+			this.processBuySell();
+		} else {
 			System.out.println("\nThese are available markets' ID's\n");
 			String[] marketStrings = markets.split(",", 0);
 
@@ -152,8 +153,8 @@ public class Broker {
 		this.ConnID = _connID;
 	}
 
-	public void setBrokerHandler(BrokerHandler _bh) {
-		this.bh = _bh;
+	public void setClientHandler(ClientHandler _ch) {
+		this.ch = _ch;
 	}
 
 	public static void main(String[] args) {
@@ -161,17 +162,17 @@ public class Broker {
 		// System.out.println(BCrypt.withDefaults().hashToString(10,
 		// "hhh".toCharArray()));
 
-		Colour.out.green("\n\tWELCOME TO THE FIX PORTAL\n");
+		Colour.out.green("\n\tWELCOME TO THE FIX BROKER PORTAL\n");
 
 		Broker br = new Broker();
 		if (br.login()) {
 			try {
-				BrokerHandler bh = BrokerHandler.start();
-				br.setBrokerHandler(bh);
-				if (bh.getConnID() != null && !bh.getConnID().isEmpty()) {
-					br.setConnID(bh.getConnID());
+				ClientHandler ch = ClientHandler.start(5000);
+				br.setClientHandler(ch);
+				if (ch.getConnID() != null && !ch.getConnID().isEmpty()) {
+					br.setConnID(ch.getConnID());
 					br.processBuySell();
-					// System.out.println(bh.sendMessage("markets"));
+					// System.out.println(ch.sendMessage("markets"));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

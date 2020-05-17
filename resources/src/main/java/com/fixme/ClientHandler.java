@@ -12,15 +12,15 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 
-public class BrokerHandler {
+public class ClientHandler {
 	private static SocketChannel client;
 	private String ConnID;
 	private static ByteBuffer buffer;
-	private static BrokerHandler instance;
+	private static ClientHandler instance;
 
-	public static BrokerHandler start() {
+	public static ClientHandler start(int port) {
 		if (instance == null)
-			instance = new BrokerHandler();
+			instance = new ClientHandler(port);
 		return instance;
 	}
 
@@ -29,12 +29,12 @@ public class BrokerHandler {
 		buffer = null;
 	}
 
-	private BrokerHandler() {
+	private ClientHandler(int port) {
 		try {
 			buffer = ByteBuffer.allocate(256);
 
 			client = SocketChannel.open();
-			InetSocketAddress addr = new InetSocketAddress("localhost", 5000);
+			InetSocketAddress addr = new InetSocketAddress("localhost", port);
 			client.configureBlocking(false);
 			client.connect(addr);
 
