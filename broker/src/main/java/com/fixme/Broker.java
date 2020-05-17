@@ -22,6 +22,7 @@ import java.util.Scanner;
 public class Broker {
 	private Scanner scn;
 	private Map<String, Object> details;
+	private BrokerHandler bh;
 
 	private String ConnID;
 
@@ -78,7 +79,7 @@ public class Broker {
 
 	}
 
-	public void processBuySell() {
+	public void processBuySell() throws IOException {
 		Colour.white("Instruction (buy|sell): ");
 		String instr = this.scn.nextLine().trim();
 
@@ -91,7 +92,7 @@ public class Broker {
 		}
 	}
 
-	public void processBuy() {
+	public void processBuy() throws IOException {
 		System.out.println("\nHere's a list of instruments that can be bought\n");
 		String[] insts = { "GOLD", "DIAMOND", "PLATINUM", "OIL", "SUGAR", "SUGAR" };
 		String[] units = { "oz", "ct", "ct", "l", "kg", "kg" };
@@ -102,6 +103,7 @@ public class Broker {
 
 		String instName;
 		String instQuantity;
+		String marketID;
 
 		Colour.white("\nEnter Instrument name: ");
 		instName = this.scn.nextLine().trim().toUpperCase();
@@ -119,6 +121,24 @@ public class Broker {
 			instName = this.scn.nextLine().trim().toUpperCase();
 		}
 
+		String markets = bh.sendMessage("markets");
+		if (markets.isEmpty())
+			Colour.out.red("\nNo markets to trade in.\nDisconnectiing...");
+		else {
+			System.out.println("\nThese are available markets' ID's\n");
+			String[] marketStrings = markets.split(",", 0);
+
+			for (int i = 0; i < marketStrings.length; i++)
+				System.out.println((i + 1) + ". " + marketStrings[i]);
+			Colour.white("Enter market ID: ");
+			marketID = this.scn.nextLine().trim().toUpperCase();
+			while (!Helpers.inArray(marketStrings, marketID)) {
+				Colour.out.red("Invalid input");
+				Colour.white("Enter market ID: ");
+				instName = this.scn.nextLine().trim().toUpperCase();
+			}
+		}
+
 	}
 
 	public void processSell() {
@@ -132,6 +152,10 @@ public class Broker {
 		this.ConnID = _connID;
 	}
 
+	public void setBrokerHandler(BrokerHandler _bh) {
+		this.bh = _bh;
+	}
+
 	public static void main(String[] args) {
 
 		// System.out.println(BCrypt.withDefaults().hashToString(10,
@@ -143,11 +167,11 @@ public class Broker {
 		if (br.login()) {
 			try {
 				BrokerHandler bh = BrokerHandler.start();
+				br.setBrokerHandler(bh);
 				if (bh.getConnID() != null && !bh.getConnID().isEmpty()) {
 					br.setConnID(bh.getConnID());
-					// br.processBuySell();
-					System.out.println(bh.sendMessage("markets"));
-					System.out.println(bh.sendMessage("sdsdsdsd"));
+					br.processBuySell();
+					// System.out.println(bh.sendMessage("markets"));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

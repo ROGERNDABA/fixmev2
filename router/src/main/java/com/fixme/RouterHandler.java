@@ -10,8 +10,10 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class RouterHandler implements Runnable {
@@ -127,7 +129,8 @@ public class RouterHandler implements Runnable {
 
 	private String getMarkets() {
 		HashMap<String, SocketChannel> markets = this.oclient.getClients();
-		return markets.keySet().toString() + "rrrr";
+		List<String> keys = new ArrayList<>(markets.keySet());
+		return String.join(",", keys) + " ";
 	}
 
 	private void respondToClient(ByteBuffer buff, SelectionKey skey) throws IOException {
