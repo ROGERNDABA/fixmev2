@@ -85,51 +85,38 @@ public class RouterHandler implements Runnable {
 		ByteBuffer buff = ByteBuffer.allocate(1024);
 
 		try {
-			StringBuilder sb = new StringBuilder();
-
 			String msg = "";
 			int read;
 
 			buff.flip();
 			buff.clear();
-			read = client.read(buff);
-			if (read > 0) {
+
+			while ((read = client.read(buff)) > 0) {
 				buff.flip();
 				msg = Charset.forName("UTF-8").decode(buff).toString().trim();
+				buff.clear();
 			}
-
-			// while ((read = client.read(buff)) > 0) {
-			// System.out.println(client.toString());
-			// buff.flip();
-			// byte[] bytes = new byte[buff.limit()];
-			// buff.get(bytes);
-			// sb.append(new String(bytes));
-			// buff.clear();
-			// }
-			System.out.println("=====> " + msg);
 			if (read < 0) {
 				TimePrint.print(this.name + " " + ID + " disconnected.");
 				this.clients.remove(ID);
 				client.close();
 			} else {
+				if (msg.equals("markets")) {
+					buff.flip();
+					buff.clear();
+					buff.put(this.getMarkets().getBytes());
+					buff.flip();
+					client.write(buff);
+				} else {
+					System.out.println("==================");
+				}
 
-				// client.register(selector, SelectionKey.OP_WRITE);
-				// System.out.println(this.getMarkets());
-				// if (msg.trim().equals("markets")) {
-				// buff.flip();
-				// buff.clear();
-				// buff.put(this.getMarkets().getBytes());
-				// buff.flip();
-				// // buff.rewind();
-				// client.write(buff);
-				// }
 			}
 
 		} catch (IOException ioe) {
 			if (ioe.getMessage().contains("An existing connection was forcibly closed by the remote host")) {
 				TimePrint.print(this.name + " " + ID + " disconnected.");
 			}
-		} finally {
 			this.clients.remove(ID);
 			client.close();
 		}

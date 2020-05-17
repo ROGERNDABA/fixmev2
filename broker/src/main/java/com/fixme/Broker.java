@@ -146,7 +146,8 @@ public class Broker {
 				if (bh.getConnID() != null && !bh.getConnID().isEmpty()) {
 					br.setConnID(bh.getConnID());
 					// br.processBuySell();
-					bh.sendMessage("markets");
+					System.out.println(bh.sendMessage("markets"));
+					System.out.println(bh.sendMessage("sdsdsdsd"));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
