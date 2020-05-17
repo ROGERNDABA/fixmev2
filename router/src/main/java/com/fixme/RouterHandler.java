@@ -155,7 +155,8 @@ public class RouterHandler implements Runnable {
 	public void broadcast(String msg, String ConnID) throws IOException {
 		SocketChannel socket = this.clients.get(ConnID);
 
-		System.out.println("1 :" + msg + "  2: " + ConnID);
+		Colour.white(this.name + ": ");
+		System.out.println(msg);
 
 		ByteBuffer buff = ByteBuffer.allocate(1024);
 		buff.flip();

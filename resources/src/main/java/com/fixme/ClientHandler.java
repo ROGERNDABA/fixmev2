@@ -60,10 +60,10 @@ public class ClientHandler {
 				int count;
 
 				while (iter.hasNext()) {
-					try {
-						SelectionKey sKey = iter.next();
-						if (sKey.isReadable()) {
-							SocketChannel sc = (SocketChannel) sKey.channel();
+					SelectionKey sKey = iter.next();
+					if (sKey.isReadable()) {
+						SocketChannel sc = (SocketChannel) sKey.channel();
+						try {
 							buffer.flip();
 							buffer.clear();
 							count = sc.read(buffer);
@@ -73,9 +73,14 @@ public class ClientHandler {
 								client.register(selector, SelectionKey.OP_WRITE);
 								return response;
 							}
+						} catch (IOException e) {
+							if (e.getMessage()
+									.contains("An existing connection was forcibly closed by the remote host")) {
+								Colour.out.red("\n\tConnection ended by FIX router.\n");
+							}
+							sc.close();
+							return null;
 						}
-					} catch (IOException e) {
-						e.printStackTrace();
 					}
 					iter.remove();
 				}

@@ -1,57 +1,57 @@
 [{
 		"_id": "5ebfc355aee275b3cb41a4c1",
 		"index": 0,
-		"market": "market0",
-		"password": "",
-		"instruments_sale": []
+		"market": "hhh",
+		"password": "$2a$10$YSJQygPygbcFxkapBLXdZ.duNJTzKZxpbCpDWvjDyuapq7P4Ipvyi",
+		"instruments_sale": "3"
 	},
 	{
 		"_id": "5ebfc355226f256b491ece2d",
 		"index": 1,
 		"market": "market1",
 		"password": "",
-		"instruments_sale": []
+		"instruments_sale": ""
 	},
 	{
 		"_id": "5ebfc35586a242885675c6e7",
 		"index": 2,
 		"market": "market2",
 		"password": "",
-		"instruments_sale": []
+		"instruments_sale": ""
 	},
 	{
 		"_id": "5ebfc355c6069fcc6bc3753d",
 		"index": 3,
 		"market": "market3",
 		"password": "",
-		"instruments_sale": []
+		"instruments_sale": ""
 	},
 	{
 		"_id": "5ebfc355e7f881074feb3c25",
 		"index": 4,
 		"market": "market4",
 		"password": "",
-		"instruments_sale": []
+		"instruments_sale": ""
 	},
 	{
 		"_id": "5ebfc3553798e82554d3dd23",
 		"index": 5,
 		"market": "market5",
 		"password": "",
-		"instruments_sale": []
+		"instruments_sale": ""
 	},
 	{
 		"_id": "5ebfc355c9ae74e2fa288df7",
 		"index": 6,
 		"market": "market6",
 		"password": "",
-		"instruments_sale": []
+		"instruments_sale": ""
 	},
 	{
 		"_id": "5ebfc355475840d530a99531",
 		"index": 7,
 		"market": "market7",
 		"password": "",
-		"instruments_sale": []
+		"instruments_sale": ""
 	}
 ]
