@@ -31,7 +31,7 @@ public class Market {
 
 	public static void main(String[] args) {
 
-		Colour.out.green("\n\tWELCOME TO THE FIX BROKER PORTAL\n");
+		Colour.out.cyan("\n\tWELCOME TO THE FIX MARKET PORTAL\n");
 
 		Market ma = new Market();
 		// try {
@@ -40,6 +40,8 @@ public class Market {
 		if (ch.getConnID() != null && !ch.getConnID().isEmpty()) {
 			ma.setConnID(ch.getConnID());
 			while (true) {
+				String fromServer = ch.getServerResponse();
+				System.out.println("Server message:" + fromServer);
 
 			}
 			// br.processBuySell();

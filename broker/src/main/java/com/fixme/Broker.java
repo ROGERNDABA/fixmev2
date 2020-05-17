@@ -131,13 +131,14 @@ public class Broker {
 
 			for (int i = 0; i < marketStrings.length; i++)
 				System.out.println((i + 1) + ". " + marketStrings[i]);
-			Colour.white("Enter market ID: ");
+			Colour.white("\nEnter market ID: ");
 			marketID = this.scn.nextLine().trim().toUpperCase();
 			while (!Helpers.inArray(marketStrings, marketID)) {
 				Colour.out.red("Invalid input");
 				Colour.white("Enter market ID: ");
 				instName = this.scn.nextLine().trim().toUpperCase();
 			}
+			ch.sendMessage(marketID);
 		}
 
 	}
