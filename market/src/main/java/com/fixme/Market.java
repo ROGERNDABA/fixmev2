@@ -1,6 +1,7 @@
 package com.fixme;
 
 import com.fixme.ClientHandler;
+import com.fixme.Helpers;
 import com.fixme.Fix;
 
 import org.json.simple.JSONArray;
@@ -15,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -81,7 +83,7 @@ public class Market {
 
 	}
 
-	public String processFixMessage(String msg) {
+	public String processFixBuyMessage(String msg) {
 		JSONParser jp = new JSONParser();
 
 		try {
@@ -89,9 +91,41 @@ public class Market {
 			FileReader reader = new FileReader(file.getParent() + "/fixme/assets/Instruments.json");
 			Object obj = jp.parse(reader);
 
-			JSONArray brokerList = (JSONArray) obj;
+			JSONArray sList = (JSONArray) obj;
 
-			System.out.println(this.details.get("instruments_sale"));
+			String bb = this.details.get("instruments_sale");
+
+			int[] inst_ids = Helpers.parseStringArr(bb, ",");
+
+			String toBuy = Fix.getFixPart(msg, 99);
+
+			String v1 = "";
+			String v2 = "";
+			String v3 = "";
+			String v4 = "";
+
+			for (Object o : sList) {
+				JSONObject b = (JSONObject) o;
+
+				if (toBuy.equals((String) b.get("instrument_name"))) {
+					for (int i : inst_id) {
+						if (i == (int) b.get("index")) {
+							int rti = new Random().nextBoolean() ? 1 : 2;
+							if (rti == 1) {
+								int v = (int) b.get("value");
+								int q = (int) b.get("quantity");
+								int pu = (int) b.get("price_per_unit");
+								if (v > 0) {
+									b.put("quantity", q - 1);
+									b.put("value", v - pu);
+								}
+							}
+
+						}
+					}
+				}
+			}
+
 		} catch (FileNotFoundException fnfe) {
 			fnfe.printStackTrace();
 		} catch (IOException ioe) {
@@ -117,7 +151,7 @@ public class Market {
 
 		Market ma = new Market();
 		if (ma.login()) {
-			ma.processFixMessage("8=FIX-42|9=39|49=059801|56=059876|99=GOLD|88=33|35=1|10=098|");
+			ma.processFixBuyMessage("8=FIX-42|9=39|49=059801|56=059876|99=GOLD|88=33|35=1|10=098|");
 			// try {
 			// ClientHandler ch = ClientHandler.start(5001);
 			// ma.setClientHandler(ch);

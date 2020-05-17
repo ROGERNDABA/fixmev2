@@ -77,4 +77,14 @@ public class Helpers {
 		return true;
 	}
 
+	public static int[] parseStringArr(String str, String delim) {
+		String[] strArr = str.trim().split(delim);
+		int[] intArr = new int[strArr.length];
+		for (int i = 0; i < strArr.length; i++) {
+			String num = strArr[i].trim();
+			intArr[i] = Integer.parseInt(num);
+		}
+		return intArr;
+	}
+
 }

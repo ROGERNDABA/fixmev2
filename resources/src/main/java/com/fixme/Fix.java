@@ -9,7 +9,7 @@ public class Fix {
 	// pattern for fix message
 	// \|(([0-9]){1,3}=([a-z0-9]){1,}\|){4,}$
 
-	public static String encode(String clientID, String instname, String quantity, String destClientID,
+	public static String encode(String clientID, String instname, String quantity, String Price, String destClientID,
 			int messageType) {
 		String fixString = "";
 		String fixString2 = "";
@@ -19,6 +19,7 @@ public class Fix {
 		fixString2 += "|56=" + clientID;
 		fixString2 += "|99=" + instname;
 		fixString2 += "|88=" + quantity;
+		fixString2 += "|77=" + Price;
 		fixString2 += "|35=" + messageType + "|";
 
 		String tmp = fixString2;
@@ -73,6 +74,16 @@ public class Fix {
 		if (m.find()) {
 			return m.group(0).split("=")[1];
 		}
+		return "";
+	}
+
+	public static String putFixPart(String fix, int part) {
+		// Pattern p = Pattern.compile("(" + part + "=.*?(?=\\|))");
+		// Matcher m = p.matcher(fix);
+
+		// if (m.find()) {
+		// return m.group(0).split("=")[1];
+		// }
 		return "";
 	}
 

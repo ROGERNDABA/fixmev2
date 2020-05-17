@@ -139,7 +139,7 @@ public class Broker {
 				Colour.white("Enter market ID: ");
 				marketID = this.scn.nextLine().trim().toUpperCase();
 			}
-			String fixString = Fix.encode(this.ConnID, instName, instQuantity, marketID, 1);
+			String fixString = Fix.encode(this.ConnID, instName, instQuantity, "0", marketID, 1);
 			ch.sendMessage(fixString);
 			String marketResp = ch.getServerResponse();
 			// System.out.println(fixString);
