@@ -142,17 +142,87 @@ public class Broker {
 			String fixString = Fix.encode(this.ConnID, instName, instQuantity, "0", marketID, 1);
 			ch.sendMessage(fixString);
 			String marketResp = ch.getServerResponse();
-			// System.out.println(fixString);
-			// System.out.println("---> " + Fix.validFixChecksum(fixString));
-			// Fix.getFixPart(fixString, 56);
-			// public String name(String clientID, String instname, int quantity, String
-			// destClientID, int messageType)
+			String respType = Fix.getFixPart(marketResp, 35);
+
+			System.out.println("\n" + marketResp);
+			if (respType.equals(3))
+				System.out.println("Order accepeted!");
+			else
+				System.out.println("Order Rejected!");
+
+			this.processBuySell();
 		}
 
 	}
 
-	public void processSell() {
+	public void processSell() throws IOException {
+		System.out.println("\nHere's a list of instruments that can be bought\n");
+		String[] insts = { "GOLD", "DIAMOND", "PLATINUM", "OIL", "SUGAR", "SUGAR" };
+		String[] units = { "oz", "ct", "ct", "l", "kg", "kg" };
 
+		for (int i = 0; i < insts.length; i++) {
+			System.out.println((i + 1) + ". " + insts[i] + " (" + units[i] + ")");
+		}
+
+		String instName;
+		String instQuantity;
+		String insPrice;
+		String marketID;
+
+		Colour.white("\nEnter Instrument name: ");
+		instName = this.scn.nextLine().trim().toUpperCase();
+		while (!Helpers.inArray(insts, instName)) {
+			Colour.out.red("Invalid input");
+			Colour.white("Enter Instrument name: ");
+			instName = this.scn.nextLine().trim().toUpperCase();
+		}
+
+		Colour.white("Enter Instrument quantity: ");
+		instQuantity = this.scn.nextLine().trim().toUpperCase();
+		while (!Helpers.isNumeric(instQuantity)) {
+			Colour.out.red("Invalid input");
+			Colour.white("Enter Instrument quantity: ");
+			instQuantity = this.scn.nextLine().trim().toUpperCase();
+		}
+
+		Colour.white("Enter Instrument price: ");
+		insPrice = this.scn.nextLine().trim().toUpperCase();
+		while (!Helpers.isNumeric(insPrice)) {
+			Colour.out.red("Invalid input");
+			Colour.white("Enter Instrument price: ");
+			insPrice = this.scn.nextLine().trim().toUpperCase();
+		}
+		ch.sendMessage("markets");
+		String markets = ch.getServerResponse();
+		if (markets.isEmpty()) {
+			Colour.out.red("\nNo markets to trade in.\n");
+			this.processBuySell();
+		} else {
+			System.out.println("\nThese are available markets' ID's\n");
+			String[] marketStrings = markets.split(",", 0);
+
+			for (int i = 0; i < marketStrings.length; i++)
+				System.out.println((i + 1) + ". " + marketStrings[i]);
+			Colour.white("\nEnter market ID: ");
+			marketID = this.scn.nextLine().trim().toUpperCase();
+			while (!Helpers.inArray(marketStrings, marketID)) {
+				Colour.out.red("Invalid input");
+				Colour.white("Enter market ID: ");
+				marketID = this.scn.nextLine().trim().toUpperCase();
+			}
+			String fixString = Fix.encode(this.ConnID, instName, instQuantity, insPrice, marketID, 2);
+			ch.sendMessage(fixString);
+			String marketResp = ch.getServerResponse();
+			String respType = Fix.getFixPart(marketResp, 35);
+
+			System.out.println("\n" + marketResp);
+			if (respType.equals(3))
+				System.out.println("Order accepeted!");
+			else
+				System.out.println("Order Rejected!");
+
+			this.processBuySell();
+		}
 	}
 
 	/**
@@ -184,7 +254,8 @@ public class Broker {
 					// System.out.println(ch.sendMessage("markets"));
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				Colour.out.red("\nSomething wend wrong!!!\n");
+				return;
 			}
 		}
 	}

@@ -14,7 +14,9 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
@@ -85,19 +87,22 @@ public class Market {
 
 	public String processFixBuyMessage(String msg) {
 		JSONParser jp = new JSONParser();
+		String toBuy = Fix.getFixPart(msg, 99);
+		String quantity = Fix.getFixPart(msg, 88);
+
+		File file;
+		JSONArray sList;
 
 		try {
-			File file = new File("").getCanonicalFile();
+			file = new File("").getCanonicalFile();
 			FileReader reader = new FileReader(file.getParent() + "/fixme/assets/Instruments.json");
 			Object obj = jp.parse(reader);
 
-			JSONArray sList = (JSONArray) obj;
+			sList = (JSONArray) obj;
 
-			String bb = this.details.get("instruments_sale");
+			String bb = (String) this.details.get("instruments_sale");
 
 			int[] inst_ids = Helpers.parseStringArr(bb, ",");
-
-			String toBuy = Fix.getFixPart(msg, 99);
 
 			String v1 = "";
 			String v2 = "";
@@ -108,24 +113,45 @@ public class Market {
 				JSONObject b = (JSONObject) o;
 
 				if (toBuy.equals((String) b.get("instrument_name"))) {
-					for (int i : inst_id) {
-						if (i == (int) b.get("index")) {
+					for (int i : inst_ids) {
+						Long ind = (Long) b.get("index");
+						if (i == ind) {
 							int rti = new Random().nextBoolean() ? 1 : 2;
+							Long pu = 0L;
 							if (rti == 1) {
-								int v = (int) b.get("value");
-								int q = (int) b.get("quantity");
-								int pu = (int) b.get("price_per_unit");
+								Long v = (Long) b.get("value");
+								Long q = (Long) b.get("quantity");
+								pu = (Long) b.get("price_per_unit");
 								if (v > 0) {
-									b.put("quantity", q - 1);
-									b.put("value", v - pu);
+									b.put("quantity", q + 1);
+									b.put("value", v + pu);
+									o = (Object) b;
+								} else {
+									b.put("quantity", q + 1);
+									b.put("value", v + pu);
+									o = (Object) b;
 								}
+								try (Writer out = new FileWriter(file.getParent() + "/fixme/assets/Instruments.json",
+										false)) {
+									out.write(sList.toJSONString());
+								}
+								return Fix.encode(ch.getConnID(), toBuy, quantity, "56", Fix.getFixPart(msg, 56), 3);
+							} else {
+								try (Writer out = new FileWriter(file.getParent() + "/fixme/assets/Instruments.json",
+										false)) {
+									out.write(sList.toJSONString());
+								}
+								return Fix.encode(ch.getConnID(), toBuy, quantity, "56", Fix.getFixPart(msg, 56), 4);
 							}
 
 						}
 					}
 				}
 			}
-
+			try (Writer out = new FileWriter(file.getParent() + "/fixme/assets/Instruments.json", false)) {
+				out.write(sList.toJSONString());
+			}
+			return Fix.encode(ch.getConnID(), toBuy, quantity, "0", Fix.getFixPart(msg, 56), 5);
 		} catch (FileNotFoundException fnfe) {
 			fnfe.printStackTrace();
 		} catch (IOException ioe) {
@@ -133,8 +159,7 @@ public class Market {
 		} catch (ParseException pe) {
 			pe.printStackTrace();
 		}
-		return "";
-
+		return Fix.encode(ch.getConnID(), toBuy, "0", "0", Fix.getFixPart(msg, 56), 5);
 	}
 
 	public void setConnID(String _connID) {
@@ -151,28 +176,29 @@ public class Market {
 
 		Market ma = new Market();
 		if (ma.login()) {
-			ma.processFixBuyMessage("8=FIX-42|9=39|49=059801|56=059876|99=GOLD|88=33|35=1|10=098|");
-			// try {
-			// ClientHandler ch = ClientHandler.start(5001);
-			// ma.setClientHandler(ch);
-			// if (ch.getConnID() != null && !ch.getConnID().isEmpty()) {
-			// ma.setConnID(ch.getConnID());
-			// // while (true) {
-			// // String fromServer = ch.getServerResponse();
-			// // if (fromServer == null)
-			// // return;
-			// // System.out.println("Server message:" + fromServer);
-			// // ch.sendMessage(Fix.encode(ch.getConnID(), "roger", "0",
-			// // Fix.getFixPart(fromServer, 56), 1));
-			// // // fromServer
+			try {
+				ClientHandler ch = ClientHandler.start(5001);
+				ma.setClientHandler(ch);
+				if (ch.getConnID() != null && !ch.getConnID().isEmpty()) {
+					ma.setConnID(ch.getConnID());
+					while (true) {
+						String fromServer = ch.getServerResponse();
+						if (fromServer == null)
+							return;
+						System.out.println("Server message:" + fromServer);
 
-			// // }
-			// // br.processBuySell();
-			// // System.out.println(ch.sendMessage("markets"));
-			// }
-			// } catch (IOException e) {
-			// e.printStackTrace();
-			// }
+						ch.sendMessage(ma.processFixBuyMessage(fromServer));
+						// ch.sendMessage(Fix.encode(ch.getConnID(), "roger", "0",
+						// Fix.getFixPart(fromServer, 56), 1));
+						// // fromServer
+
+					}
+					// br.processBuySell();
+					// System.out.println(ch.sendMessage("markets"));
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}
