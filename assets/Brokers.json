@@ -9,21 +9,21 @@
 		"_id": "5ebfb00301fbe5da9b42fc26",
 		"index": 1,
 		"broker": "KEENGEN",
-		"password": "rer",
+		"password": "$2a$10$JsVxvdFvFgGzSPk9CvuYDeMVkJrUxXmfPMG4gg94E2uKu/cRJyzDK",
 		"instruments": "0,1,2"
 	},
 	{
 		"_id": "5ebfb0032871f319f3ea049e",
 		"index": 2,
 		"broker": "EXOSTREAM",
-		"password": "",
+		"password": "$2a$10$JsVxvdFvFgGzSPk9CvuYDeMVkJrUxXmfPMG4gg94E2uKu/cRJyzDK",
 		"instruments": "0,1,2"
 	},
 	{
 		"_id": "5ebfb003921f7af80bd05d41",
 		"index": 3,
 		"broker": "ZENTURY",
-		"password": "",
+		"password": "$2a$10$JsVxvdFvFgGzSPk9CvuYDeMVkJrUxXmfPMG4gg94E2uKu/cRJyzDK",
 		"instruments": "0,1,2"
 	},
 	{
@@ -37,14 +37,14 @@
 		"_id": "5ebfb00310ce187d705ac5bb",
 		"index": 5,
 		"broker": "ZILCH",
-		"password": "",
+		"password": "$2a$10$JsVxvdFvFgGzSPk9CvuYDeMVkJrUxXmfPMG4gg94E2uKu/cRJyzDK",
 		"instruments": "0,1,2"
 	},
 	{
 		"_id": "5ebfb003143cec1d8d98424e",
 		"index": 6,
 		"broker": "LINGOAGE",
-		"password": "",
+		"password": "$2a$10$JsVxvdFvFgGzSPk9CvuYDeMVkJrUxXmfPMG4gg94E2uKu/cRJyzDK",
 		"instruments": "0,1,2"
 	}
 ]
